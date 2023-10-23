@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
+const sdk = require("api")("@chainbase/v1.0#4csv10ulmyppvzx");
 
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
 const user_id = "919141293878280203";
@@ -28,22 +29,20 @@ app.post("/webhook", async (req, res) => {
 
   if ((from || to) === user_wallet.toLowerCase()) {
     try {
-        const message = `Hey chief, you just ${
-          from !== user_wallet.toLowerCase()
-            ? `received ${value} Eth on Base from ${from}`
-            : `sent ${value} Eth to ${to} on Base`
-        }`;
-        user.send(message);
-        return res.status(200).json();
-      } catch (error) {
-        console.log(error);
-        return res.status(400).json();
-      }
+      const message = `Hey chief, you just ${
+        from !== user_wallet.toLowerCase()
+          ? `received ${value} Eth on Base from ${from}`
+          : `sent ${value} Eth to ${to} on Base`
+      }`;
+      user.send(message);
+      return res.status(200).json();
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json();
+    }
+  } else {
+    console.log("Transaction irrelevant to this user");
   }
-  else {
-    console.log("Transaction irrelevant to this user")
-  }
-
 });
 
 app.get("/webhook", (req, res) => {
@@ -56,25 +55,31 @@ app.listen(PORT, () => {
 });
 
 client.once("ready", () => {
-    const commands = [
-        {
-            name: "ping",
-            description: "Replies with a pong"
-        }
-    ]
-    
-    client.application.commands.set(commands).then(() => {
-        console.log('Slash commands registered.');
-    }).catch(console.error);
-    
-    client.on("interactionCreate", async (interaction) => {
-        if (!interaction.isCommand()) {
-            console.log("Invalid command")
-        }
-        const { commandName } = interaction;
-    
-        if (commandName === 'ping') {
-            await interaction.reply('Pong!');
-        }
+  const commands = [
+    {
+      name: "balance",
+      description: `Replies with the balance of ${user_wallet}`,
+    },
+  ];
+
+  client.application.commands
+    .set(commands)
+    .then(() => {
+      console.log("Slash commands registered.");
     })
-})
+    .catch(console.error);
+
+  client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isCommand()) {
+      console.log("Invalid command");
+    }
+    const { commandName } = interaction;
+
+    if (commandName === "balance") {
+      const { result } = sdk.get_address_balance_getAddressBalance_get({
+          address: "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29",
+      }).catch((err) => console.error(err));
+      await interaction.reply(result);
+    }
+  });
+});
