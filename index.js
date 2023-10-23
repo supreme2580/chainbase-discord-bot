@@ -49,7 +49,7 @@ app.post("/webhook", async (req, res) => {
   const { body } = req;
   const from = body.data.from_address;
   const to = body.data.to_address;
-  const value = body.data.value/1000000000000000000n || 0;
+  const value = body.data.value/1000000000000000000 || 0;
 
   if ((from || to) === user_wallet.toLowerCase()) {
     try {
