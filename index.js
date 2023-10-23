@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
-const sdk = require("api")("@chainbase/v1.0#4csv10ulmyppvzx");
+const sdk = require("api")('https://docs.chainbase.com/openapi/6447bb6e2f140000792476a1');
 
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
 const user_id = "919141293878280203";
@@ -71,8 +71,12 @@ client.once("ready", () => {
     const { commandName } = interaction;
 
     if (commandName === "balance") {
-      const { result } = await sdk.get_address_balance_getAddressBalance_get({ address: user_wallet })
-      .catch((err) => console.error(err));
+      const { result } = await sdk.evmEthGetBalance({
+        id: 1,
+        jsonrpc: '2.0',
+        method: 'eth_getBalance',
+        params: [user_wallet, 'latest']
+      }, {'api-key': 'demo'})
       await interaction.reply(result);
     }
   });
