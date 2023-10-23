@@ -26,9 +26,8 @@ app.post("/webhook", async (req, res) => {
   const to = body.data.to_address;
   const value = Number(body.data.value / 1e18) || 0;
 
-  client.once("ready", () => {
-    try {
-      const message = `Hey chief, you just ${
+  try {
+    const message = `Hey chief, you just ${
         from !== user_wallet
           ? `received ${value} Eth on Base from ${from}`
           : `sent ${value} Eth to ${to} on Base`
@@ -36,11 +35,10 @@ app.post("/webhook", async (req, res) => {
       console.log(message)
       user.send(message);
       return res.status(200).json();
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json();
-    }
-  });
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json();
+  }
 });
 
 app.get("/webhook", (req, res) => {
@@ -48,6 +46,6 @@ app.get("/webhook", (req, res) => {
   return res.status(200).json();
 });
 
-app.listen(PORT, async() => {
+app.listen(PORT, () => {
   console.log(`Webhook receiver listening🎉🎉🎉`);
 });
