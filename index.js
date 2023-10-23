@@ -16,9 +16,9 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/webhook', (req, res) => {
+app.post('/webhook', async (req, res) => {
 
-    const user = client.users.fetch(user_id).then(response => { return response });
+    const user = await client.users.fetch(user_id);
     const { body } = req
     const from = body.data.from_address
     const to = body.data.to_address
