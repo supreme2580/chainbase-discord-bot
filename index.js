@@ -55,25 +55,28 @@ app.listen(PORT, () => {
   console.log(`Webhook receiver listening🎉🎉🎉`);
 });
 
-const commands = [
-    {
-        name: "ping",
-        description: "Replies with a pong"
-    }
-]
+async function main() {
+    const commands = [
+        {
+            name: "ping",
+            description: "Replies with a pong"
+        }
+    ]
+    
+    await client.application.commands.set(commands).then(() => {
+        console.log('Slash commands registered.');
+    }).catch(console.error);
+    
+    client.on("interactionCreate", async (interaction) => {
+        if (!interaction.isCommand()) {
+            console.log("Invalid command")
+        }
+        const { commandName } = interaction;
+    
+        if (commandName === 'ping') {
+            await interaction.reply('Pong!');
+        }
+    })
+}
 
-client.application.commands.set(commands).then(() => {
-    console.log('Slash commands registered.');
-})
-.catch(console.error);
-
-client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isCommand()) {
-        console.log("Invalid command")
-    }
-    const { commandName } = interaction;
-
-    if (commandName === 'ping') {
-        await interaction.reply('Pong!');
-    }
-})
+main()
