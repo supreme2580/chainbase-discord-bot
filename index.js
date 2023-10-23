@@ -35,6 +35,10 @@ app.post('/webhook', (req, res) => {
     })
 });
 
+app.get('/webhook', () => {
+    console.log("I'm alive🎉🎉🎉")
+})
+
 app.listen(PORT, () => {
     console.log(`Webhook receiver listening🎉🎉🎉`);
 });
