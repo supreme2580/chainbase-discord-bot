@@ -2,10 +2,14 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
-const sdk = require("api")('https://docs.chainbase.com/openapi/6447bb6e2f140000792476a1');
+const sdk = require("api")(
+  "https://docs.chainbase.com/openapi/6447bb6e2f140000792476a1"
+);
+const fetch = require("node-fetch");
 
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
 const user_id = "919141293878280203";
+const network_id = 8453;
 
 const PORT = process.env.PORT || 3000;
 
@@ -62,7 +66,12 @@ client.once("ready", () => {
     },
   ];
 
-  client.application.commands.set(commands).then(() => { console.log("Slash commands registered.") }).catch(console.error);
+  client.application.commands
+    .set(commands)
+    .then(() => {
+      console.log("Slash commands registered.");
+    })
+    .catch(console.error);
 
   client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) {
@@ -71,13 +80,17 @@ client.once("ready", () => {
     const { commandName } = interaction;
 
     if (commandName === "balance") {
-      const { result } = await sdk.evmEthGetBalance({
-        id: 1,
-        jsonrpc: '2.0',
-        method: 'eth_getBalance',
-        params: [user_wallet, 'latest']
-      }, {'api-key': 'demo'})
-      await interaction.reply(result);
+      const balance = fetch(
+        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${user_wallet}`,
+        {
+          method: "GET",
+          headers: {
+            "x-api-key": CHAINBASE_API_KEY, // Replace the field with your API key.
+            accept: "application/json",
+          },
+        }
+      );
+      await interaction.reply(balance);
     }
   });
 });
