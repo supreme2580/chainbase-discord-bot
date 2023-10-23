@@ -26,7 +26,7 @@ app.post("/webhook", async (req, res) => {
   const to = body.data.to_address;
   const value = Number(body.data.value / 1e18) || 0;
 
-  if (from == user_wallet || to == user_wallet) {
+  if (from === user_wallet || to === user_wallet) {
     try {
         const message = `Hey chief, you just ${
           from !== user_wallet.toLowerCase()
