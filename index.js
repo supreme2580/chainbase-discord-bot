@@ -42,6 +42,8 @@ app.post("/webhook", async (req, res) => {
   }
   else {
     console.log("Transaction irrelevant to this user")
+    console.log("from: ", from)
+    console.log("to: ", to)
   }
 
 });
