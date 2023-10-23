@@ -55,7 +55,7 @@ app.listen(PORT, () => {
   console.log(`Webhook receiver listening🎉🎉🎉`);
 });
 
-async function main() {
+client.once("ready", () => {
     const commands = [
         {
             name: "ping",
@@ -63,7 +63,7 @@ async function main() {
         }
     ]
     
-    await client.application.commands.set(commands).then(() => {
+    client.application.commands.set(commands).then(() => {
         console.log('Slash commands registered.');
     }).catch(console.error);
     
@@ -77,6 +77,4 @@ async function main() {
             await interaction.reply('Pong!');
         }
     })
-}
-
-main()
+})
