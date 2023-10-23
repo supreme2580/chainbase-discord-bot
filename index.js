@@ -58,7 +58,7 @@ client.once("ready", () => {
   const commands = [
     {
       name: "balance",
-      description: `Replies with the balance of ${user_wallet}`,
+      description: "Replies with the balance of user's wallet",
     },
   ];
 
