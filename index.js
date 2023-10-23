@@ -62,12 +62,7 @@ client.once("ready", () => {
     },
   ];
 
-  client.application.commands
-    .set(commands)
-    .then(() => {
-      console.log("Slash commands registered.");
-    })
-    .catch(console.error);
+  client.application.commands.set(commands).then(() => { console.log("Slash commands registered.") }).catch(console.error);
 
   client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) {
@@ -76,9 +71,8 @@ client.once("ready", () => {
     const { commandName } = interaction;
 
     if (commandName === "balance") {
-      const { result } = sdk.get_address_balance_getAddressBalance_get({
-          address: "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29",
-      }).catch((err) => console.error(err));
+      const { result } = await sdk.get_address_balance_getAddressBalance_get({ address: user_wallet })
+      .catch((err) => console.error(err));
       await interaction.reply(result);
     }
   });
