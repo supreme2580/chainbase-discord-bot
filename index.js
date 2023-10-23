@@ -29,12 +29,11 @@ app.post('/webhook', (req, res) => {
         if (user) {
             const message = `Hey chief, you just ${from !== user_wallet ? `received ${value} Eth on Base from ${from}` : `sent ${value} Eth to ${to} on Base`}`;
             user.send(message).then(() => console.log(`Message sent to ${user}`)).catch(e => console.log(e))
-            res.status(200).send('OK');
         }
         else {
             console.log("User not found")
         }
-
+        res.status(200).send('OK');
     })
 });
 
