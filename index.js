@@ -28,7 +28,7 @@ app.post("/webhook", async (req, res) => {
 
   try {
     const message = `Hey chief, you just ${
-      from !== user_wallet
+      from !== user_wallet.toLowerCase()
         ? `received ${value} Eth on Base from ${from}`
         : `sent ${value} Eth to ${to} on Base`
     }`;
