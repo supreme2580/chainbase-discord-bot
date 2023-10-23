@@ -33,7 +33,6 @@ app.post("/webhook", async (req, res) => {
           ? `received ${value} Eth on Base from ${from}`
           : `sent ${value} Eth to ${to} on Base`
       }`;
-      console.log(message);
       user.send(message);
       return res.status(200).json();
     } catch (error) {
