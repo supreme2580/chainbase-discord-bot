@@ -25,19 +25,17 @@ app.post('/webhook', async (req, res) => {
     const value = Number(body.data.value / 1E18) || 0;
 
     client.once("ready", () => {
-
-        if (user) {
-            try {
+        try {
+            if (user) {
                 const message = `Hey chief, you just ${from !== user_wallet ? `received ${value} Eth on Base from ${from}` : `sent ${value} Eth to ${to} on Base`}`;
                 user.send(message).then(() => console.log(`Message sent to ${user.username}`)).catch(e => console.log(e))
                 return res.status(200).json();
-            } catch (error) {
-                console.log(error)
-                return res.status(400).json();
             }
-        }
-        else {
-            console.log("User not found")
+            else {
+                console.log("User not found")
+            }
+        } catch (error) {
+            console.log(error)
             return res.status(400).json();
         }
     })
