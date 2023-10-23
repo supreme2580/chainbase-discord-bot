@@ -8,7 +8,7 @@ const user_id = "919141293878280203"
 
 const PORT = process.env.PORT || 3000;
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages], partials: ["MESSAGE", "CHANNEL", "REACTION"] });
 
 client.login(process.env.PASS);
 
@@ -24,7 +24,9 @@ app.post('/webhook', (req, res) => {
     const to = body.data.to_address
     const value = Number(body.data.value / 1E18) || 0;
 
-    client.once("ready", () => {
+    console.log("user: ", user)
+
+    client.on("ready", () => {
 
         if (user) {
             try {
