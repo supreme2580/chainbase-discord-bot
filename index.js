@@ -26,18 +26,24 @@ app.post("/webhook", async (req, res) => {
   const to = body.data.to_address;
   const value = Number(body.data.value / 1e18) || 0;
 
-  try {
-    const message = `Hey chief, you just ${
-      from !== user_wallet.toLowerCase()
-        ? `received ${value} Eth on Base from ${from}`
-        : `sent ${value} Eth to ${to} on Base`
-    }`;
-    user.send(message);
-    return res.status(200).json();
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json();
+  if (from == user_wallet || to == user_wallet) {
+    try {
+        const message = `Hey chief, you just ${
+          from !== user_wallet.toLowerCase()
+            ? `received ${value} Eth on Base from ${from}`
+            : `sent ${value} Eth to ${to} on Base`
+        }`;
+        user.send(message);
+        return res.status(200).json();
+      } catch (error) {
+        console.log(error);
+        return res.status(400).json();
+      }
   }
+  else {
+    console.log("Transaction irrelevant to this user")
+  }
+
 });
 
 app.get("/webhook", (req, res) => {
