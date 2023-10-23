@@ -5,6 +5,8 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29"
 const user_id = "919141293878280203"
 
+const PORT = process.env.PORT || 3000;
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
 client.login(process.env.PASS);
