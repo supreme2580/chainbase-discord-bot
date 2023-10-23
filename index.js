@@ -27,9 +27,14 @@ app.post('/webhook', (req, res) => {
     client.once("ready", () => {
 
         if (user) {
-            const message = `Hey chief, you just ${from !== user_wallet ? `received ${value} Eth on Base from ${from}` : `sent ${value} Eth to ${to} on Base`}`;
-            user.send(message).then(() => console.log(`Message sent to ${user}`)).catch(e => console.log(e))
-            return res.status(200).json();
+            try {
+                const message = `Hey chief, you just ${from !== user_wallet ? `received ${value} Eth on Base from ${from}` : `sent ${value} Eth to ${to} on Base`}`;
+                user.send(message).then(() => console.log(`Message sent to ${user}`)).catch(e => console.log(e))
+                return res.status(200).json();
+            } catch (error) {
+                console.log(error)
+                return res.status(400).json();
+            }
         }
         else {
             console.log("User not found")
@@ -38,7 +43,7 @@ app.post('/webhook', (req, res) => {
     })
 });
 
-app.get('/webhook', (res, req) => {
+app.get('/webhook', async (res, req) => {
     console.log("I'm alive🎉🎉🎉")
     return res.status(200).json();
 })
