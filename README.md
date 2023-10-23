@@ -1,1 +1,0 @@
-# spade-treasury-discord-bot
