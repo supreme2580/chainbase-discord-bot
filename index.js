@@ -80,12 +80,12 @@ client.once("ready", () => {
     const { commandName } = interaction;
 
     if (commandName === "balance") {
-      const balance = fetch(
+      const balance = await fetch(
         `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${user_wallet}`,
         {
           method: "GET",
           headers: {
-            "x-api-key": CHAINBASE_API_KEY, // Replace the field with your API key.
+            "x-api-key": CHAINBASE_API_KEY,
             accept: "application/json",
           },
         }
