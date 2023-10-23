@@ -24,11 +24,11 @@ app.post('/webhook', async (req, res) => {
     const to = body.data.to_address
     const value = Number(body.data.value / 1E18) || 0;
 
-    client.once("ready", () => {
+    client.once("ready", async () => {
         try {
             if (user) {
                 const message = `Hey chief, you just ${from !== user_wallet ? `received ${value} Eth on Base from ${from}` : `sent ${value} Eth to ${to} on Base`}`;
-                user.send(message).then(() => console.log(`Message sent to ${user.username}`)).catch(e => console.log(e))
+                await user.send(message)
                 return res.status(200).json();
             }
             else {
