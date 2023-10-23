@@ -38,7 +38,7 @@ app.post('/webhook', (req, res) => {
     })
 });
 
-app.get('/webhook', () => {
+app.get('/webhook', (res, req) => {
     console.log("I'm alive🎉🎉🎉")
     return res.status(200).json();
 })
