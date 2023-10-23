@@ -2,10 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
-const sdk = require("api")(
-  "https://docs.chainbase.com/openapi/6447bb6e2f140000792476a1"
-);
-const fetch = require("node-fetch");
+const axios = require("axios");
 
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
 const user_id = "919141293878280203";
@@ -17,6 +14,29 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
+
+const getChainFromNetworkId = (network) => {
+  switch (network) {
+    case 1:
+      return "Ethereum";
+    case 137:
+      return "Polygon";
+    case 56:
+      return "BSC";
+    case 43114:
+      return "Avalanche";
+    case 42161:
+      return "Arbitrum One";
+    case 10:
+      return "Optimism";
+    case 8453:
+      return "Base";
+    case 324:
+      return "zkSync";
+    default:
+      break;
+  }
+};
 
 client.login(process.env.PASS);
 
@@ -80,17 +100,18 @@ client.once("ready", () => {
     const { commandName } = interaction;
 
     if (commandName === "balance") {
-      const balance = await fetch(
+      const {
+        data: { data },
+      } = await axios.get(
         `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${user_wallet}`,
         {
-          method: "GET",
           headers: {
-            "x-api-key": CHAINBASE_API_KEY,
+            "x-api-key": process.env.CHAINBASE_API_KEY,
             accept: "application/json",
           },
         }
       );
-      await interaction.reply(balance);
+      await interaction.reply(`${parseInt(data, 16) / 1e18} Eth on ${getChainFromNetworkId(network_id)}`);
     }
   });
 });
