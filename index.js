@@ -8,8 +8,6 @@ const user_id = "919141293878280203";
 
 const PORT = process.env.PORT || 3000;
 
-const user = await client.users.fetch(user_id);
-
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
@@ -22,6 +20,7 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post("/webhook", async (req, res) => {
+  const user = await client.users.fetch(user_id);
   const { body } = req;
   const from = body.data.from_address;
   const to = body.data.to_address;
