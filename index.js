@@ -111,7 +111,7 @@ client.once("ready", () => {
           },
         }
       );
-      await interaction.reply(`${parseInt(data, 16) / 1e18} Eth on ${getChainFromNetworkId(network_id)}`);
+      await interaction.reply(`${parseInt(data, 16) / 1e18} ETH on ${getChainFromNetworkId(network_id)}`);
     }
   });
 });
