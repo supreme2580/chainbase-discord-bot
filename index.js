@@ -4,15 +4,26 @@ const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
 const axios = require("axios");
 
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const mongodb_url = `mongodb+srv://${encodeURIComponent(process.env.MONGO_DB_USERNAME)}:${encodeURIComponent(process.env.MONGO_DB_PASSWORD)}@cluster0.rrtkbar.mongodb.net/?retryWrites=true&w=majority`;
+
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
 const user_id = "919141293878280203";
 const network_id = 8453;
 
 const PORT = process.env.PORT || 3000;
 
-const client = new Client({
+const discord_client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
+});
+
+const mongodb_client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
 });
 
 const getChainFromNetworkId = (network) => {
@@ -38,14 +49,26 @@ const getChainFromNetworkId = (network) => {
   }
 };
 
-client.login(process.env.PASS);
+discord_client.login(process.env.PASS);
 
 const app = express();
 
 app.use(bodyParser.json());
 
+async function run() {
+  try {
+    await mongodb_client.connect();
+    await mongodb_client.db("admin").command({ ping: 1 });
+    console.log("You successfully connected to MongoDB!");
+  } finally {
+    await mongodb_client.close()
+  }
+}
+
+run().catch(console.dir)
+
 app.post("/webhook", async (req, res) => {
-  const user = await client.users.fetch(user_id);
+  const user = await discord_client.users.fetch(user_id);
   const { body } = req;
   const from = body.data.from_address;
   const to = body.data.to_address;
@@ -78,26 +101,57 @@ app.listen(PORT, () => {
   console.log(`Webhook receiver listening🎉🎉🎉`);
 });
 
-client.once("ready", () => {
+discord_client.once("ready", () => {
   const commands = [
     {
       name: "balance",
       description: "Replies with the balance of user's wallet",
     },
+    {
+      name: "register",
+      description: "register a new user",
+      options: [
+        {
+          name: 'name',
+          description: 'Your name',
+          type: 3,
+          required: true,
+        },
+        {
+          name: 'email address',
+          description: 'Your email address',
+          type: 3,
+          required: true,
+        },
+        {
+          name: 'wallet address',
+          description: 'Your wallet address',
+          type: 3,
+          required: true,
+        },
+      ],
+    }
   ];
 
-  client.application.commands
+  discord_client.application.commands
     .set(commands)
     .then(() => {
       console.log("Slash commands registered.");
     })
     .catch(console.error);
 
-  client.on("interactionCreate", async (interaction) => {
+    discord_client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) {
       console.log("Invalid command");
     }
     const { commandName } = interaction;
+
+    if (commandName === "register") {
+      const name = interaction.options.getString("name")
+      const email = interaction.options.getString("email address")
+      const wallet_address = interaction.options.getString("wallet address")
+      interaction.reply(`Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}`)
+    }
 
     if (commandName === "balance") {
       const {
