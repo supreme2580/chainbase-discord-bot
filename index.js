@@ -65,8 +65,6 @@ async function run() {
   }
 }
 
-run().catch(console.dir)
-
 app.post("/webhook", async (req, res) => {
   const user = await discord_client.users.fetch(user_id);
   const { body } = req;
@@ -118,13 +116,13 @@ discord_client.once("ready", () => {
           required: true,
         },
         {
-          name: 'email address',
+          name: 'email_address',
           description: 'Your email address',
           type: 3,
           required: true,
         },
         {
-          name: 'wallet address',
+          name: 'wallet_address',
           description: 'Your wallet address',
           type: 3,
           required: true,
@@ -141,6 +139,9 @@ discord_client.once("ready", () => {
     .catch(console.error);
 
     discord_client.on("interactionCreate", async (interaction) => {
+    
+    run().catch(console.dir)
+
     if (!interaction.isCommand()) {
       console.log("Invalid command");
     }
@@ -148,9 +149,9 @@ discord_client.once("ready", () => {
 
     if (commandName === "register") {
       const name = interaction.options.getString("name")
-      const email = interaction.options.getString("email address")
-      const wallet_address = interaction.options.getString("wallet address")
-      interaction.reply(`Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}`)
+      const email = interaction.options.getString("email_address")
+      const wallet_address = interaction.options.getString("wallet_address")
+      await interaction.reply(`Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}`)
     }
 
     if (commandName === "balance") {
