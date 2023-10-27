@@ -18,7 +18,7 @@ const discord_client = new Client({
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
 
-const mongodb_client = new MongoClient(uri, {
+const mongodb_client = new MongoClient(mongodb_url, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
