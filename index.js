@@ -151,7 +151,8 @@ discord_client.once("ready", () => {
       const name = interaction.options.getString("name")
       const email = interaction.options.getString("email_address")
       const wallet_address = interaction.options.getString("wallet_address")
-      await interaction.reply(`Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}`)
+      const id = interaction.user.id
+      await interaction.reply(`Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}, your user id is ${id}`)
     }
 
     if (commandName === "balance") {
