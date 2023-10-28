@@ -174,7 +174,8 @@ discord_client.once("ready", () => {
           {
             name: name,
             email: email,
-            wallet_address: wallet_address
+            wallet_address: wallet_address,
+            discord_id: id
           },
           function (err, result) {
             if (err) throw err;
