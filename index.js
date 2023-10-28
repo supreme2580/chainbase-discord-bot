@@ -88,20 +88,24 @@ app.post("/webhook", async (req, res) => {
   console.log("fr-result: ", from_result)  
   console.log("to-result: ", to_result)  
 
-  for (const discord_id in from_result) {
-    const user = await discord_client.users.fetch(discord_id);
-    const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`
-    console.log(`from: ${from}, to: ${to}, user: ${user}`)
-    user.send(message)
-    return res.status(200).json();
+  if (from_result.length > 0) {
+    for (const discord_id in from_result) {
+      const user = await discord_client.users.fetch(discord_id);
+      const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`
+      console.log(`from: ${from}, to: ${to}, user: ${user}`)
+      user.send(message)
+      return res.status(200).json();
+    }
   }
 
-  for (const discord_id in to_result) {
-    const user = await discord_client.users.fetch(discord_id);
-    const message = `Hey chief, you just received ${value} Eth to ${to} on Base`
-    console.log(`from: ${from}, to: ${to}, user: ${user}`)
-    user.send(message)
-    return res.status(200).json();
+  if (to_result.length > 0) {
+    for (const discord_id in to_result) {
+      const user = await discord_client.users.fetch(discord_id);
+      const message = `Hey chief, you just received ${value} Eth to ${to} on Base`
+      console.log(`from: ${from}, to: ${to}, user: ${user}`)
+      user.send(message)
+      return res.status(200).json();
+    }
   }
 
   return res.status(200).json();
