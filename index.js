@@ -84,6 +84,10 @@ app.post("/webhook", async (req, res) => {
   const from_result = await collection.find(from_query).toArray()
   const to_result = await collection.find(to_query).toArray()
 
+  console.log("fr: ", from, "to: ", to)
+  console.log("fr-result: ", from_result)  
+  console.log("to-result: ", to_result)  
+
   for (const discord_id in from_result) {
     const user = await discord_client.users.fetch(discord_id);
     const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`
