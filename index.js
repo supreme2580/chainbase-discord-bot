@@ -19,7 +19,6 @@ const network_id = 8453;
 
 const PORT = process.env.PORT || 3000;
 
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const discord_client = new Client({
@@ -27,20 +26,21 @@ const discord_client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
+    å,
   ],
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
 
-const mongodb_client = new MongoClient(mongodb_url)
+const mongodb_client = new MongoClient(mongodb_url);
 const collection = mongodb_client.db("chainbase_bot_users").collection("users");
 
 const isEthereumAddress = (address) => {
-  return (/^(0x)?[0-9a-fA-F]{40}$/).test(address)
-}
+  return /^(0x)?[0-9a-fA-F]{40}$/.test(address);
+};
 
 const isEmailAddress = (email) => {
-  return (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i).test(email);
-}
+  return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email);
+};
 
 const getChainFromNetworkId = (network) => {
   switch (network) {
@@ -78,22 +78,22 @@ app.post("/webhook", async (req, res) => {
   const to = body.data.to_address;
   const value = (body.data.value / 1e18).toFixed(8);
 
-  const from_query = { wallet_address: from }
-  const to_query = { wallet_address: to }
+  const from_query = { wallet_address: from };
+  const to_query = { wallet_address: to };
 
-  const from_result = await collection.find(from_query).toArray()
-  const to_result = await collection.find(to_query).toArray()
+  const from_result = await collection.find(from_query).toArray();
+  const to_result = await collection.find(to_query).toArray();
 
-  console.log("fr: ", from, "to: ", to)
-  console.log("fr-result: ", from_result)  
-  console.log("to-result: ", to_result)  
+  console.log("fr: ", from, "to: ", to);
+  console.log("fr-result: ", from_result);
+  console.log("to-result: ", to_result);
 
   if (from_result.length > 0) {
     for (const discord_id in from_result) {
       const user = await discord_client.users.fetch(discord_id);
-      const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`
-      console.log(`from: ${from}, to: ${to}, user: ${user}`)
-      user.send(message)
+      const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`;
+      console.log(`from: ${from}, to: ${to}, user: ${user}`);
+      user.send(message);
       return res.status(200).json();
     }
   }
@@ -101,37 +101,37 @@ app.post("/webhook", async (req, res) => {
   if (to_result.length > 0) {
     for (const discord_id in to_result) {
       const user = await discord_client.users.fetch(discord_id);
-      const message = `Hey chief, you just received ${value} Eth to ${to} on Base`
-      console.log(`from: ${from}, to: ${to}, user: ${user}`)
-      user.send(message)
+      const message = `Hey chief, you just received ${value} Eth to ${to} on Base`;
+      console.log(`from: ${from}, to: ${to}, user: ${user}`);
+      user.send(message);
       return res.status(200).json();
     }
   }
 
   return res.status(200).json();
 
-//   if ((from || to) === user_wallet.toLowerCase()) {
-//     try {
-//       const message = `Hey chief, you just ${
-//         from !== user_wallet.toLowerCase()
-//           ? `received ${value} Eth on Base from ${from}`
-//           : `sent ${value} Eth to ${to} on Base`
-//       }`;
-//       resend.emails.send({
-//         from: "victoromorogbe69@gmail.com",
-//         to: [email],
-//         subject: "Registration for chainbase-bot successful!!!",
-//         html: `<p>${message}</p>`
-//       })
-//       user.send(message);
-//       return res.status(200).json();
-//     } catch (error) {
-//       console.log(error);
-//       return res.status(400).json();
-//     }
-//   } else {
-//     console.log("Transaction irrelevant to this user");
-//   }
+  //   if ((from || to) === user_wallet.toLowerCase()) {
+  //     try {
+  //       const message = `Hey chief, you just ${
+  //         from !== user_wallet.toLowerCase()
+  //           ? `received ${value} Eth on Base from ${from}`
+  //           : `sent ${value} Eth to ${to} on Base`
+  //       }`;
+  //       resend.emails.send({
+  //         from: "victoromorogbe69@gmail.com",
+  //         to: [email],
+  //         subject: "Registration for chainbase-bot successful!!!",
+  //         html: `<p>${message}</p>`
+  //       })
+  //       user.send(message);
+  //       return res.status(200).json();
+  //     } catch (error) {
+  //       console.log(error);
+  //       return res.status(400).json();
+  //     }
+  //   } else {
+  //     console.log("Transaction irrelevant to this user");
+  //   }
 });
 
 app.get("/webhook", (req, res) => {
@@ -182,25 +182,34 @@ discord_client.once("ready", () => {
     })
     .catch(console.error);
 
-    discord_client.on('guildCreate' || 'guildMemberAdd', async (guild) => {
-      guild.members.cache.map(async member => await member.send("Hey chief! Please register by running ```/register``` after the chat"))
-    });
+  discord_client.on("guildCreate" || "guildMemberAdd", async (guild) => {
+    guild.members.cache.map(
+      async (member) =>
+        await member.send(
+          "Hey chief! Please register by running ```/register``` after the chat"
+        )
+    );
+  });
 
   discord_client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) {
       console.log("Invalid command");
     }
     const { commandName } = interaction;
-    const wallet_address_query = { discord_id: interaction.user.id }
-    const wallet_address_result = await collection.find(wallet_address_query).toArray()
+    const wallet_address_query = { discord_id: interaction.user.id };
+    const wallet_address_result = await collection
+      .find(wallet_address_query)
+      .toArray();
 
     if (commandName === "register") {
       const name = interaction.options.getString("name");
       const email = interaction.options.getString("email_address");
-      const wallet_address = interaction.options.getString("wallet_address").toLowerCase();
+      const wallet_address = interaction.options
+        .getString("wallet_address")
+        .toLowerCase();
       const id = interaction.user.id;
 
-      await mongodb_client.connect()
+      await mongodb_client.connect();
 
       if (isEmailAddress(email) && isEthereumAddress(wallet_address)) {
         try {
@@ -215,20 +224,41 @@ discord_client.once("ready", () => {
               from: "victoromorogbe69@gmail.com",
               to: [email],
               subject: "Registration for chainbase-bot successful!!!",
-              html: "<p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>"
-            })
-            await interaction.reply("You have been successfully registered!!")
+              html: "<p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>",
+            });
+            await interaction.reply("You have been successfully registered!!");
+
+            try {
+              const response = await axios.post(
+                "https://api.chainbase.online/v1/webhook",
+                {
+                  address: wallet_address,
+                  chain_id: network_id, // the network id you want to track
+                  url: "http://your-webhook-url.com/webhook", // your webhook URL
+                },
+                {
+                  headers: {
+                    "x-api-key": process.env.CHAINBASE_API_KEY, // your Chainbase API key
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              console.log(response.data);
+            } catch (error) {
+              console.error(error);
+            }
+
           }
         } catch (err) {
-          console.error(`Something went wrong trying to insert the new documents: ${err}\n`);
+          console.error(
+            `Something went wrong trying to insert the new documents: ${err}\n`
+          );
         }
-      }
-      else {
+      } else {
         if (isEmailAddress(email) === false) {
-          await interaction.reply("Invalid email address")
-        }
-        else {
-          await interaction.reply("Invalid ethereum wallet address")
+          await interaction.reply("Invalid email address");
+        } else {
+          await interaction.reply("Invalid ethereum wallet address");
         }
       }
     }
@@ -237,7 +267,9 @@ discord_client.once("ready", () => {
       const {
         data: { data },
       } = await axios.get(
-        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result.at(wallet_address_result.length-1)}`,
+        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result.at(
+          wallet_address_result.length - 1
+        )}`,
         {
           headers: {
             "x-api-key": process.env.CHAINBASE_API_KEY,
