@@ -224,22 +224,28 @@ discord_client.once("ready", () => {
     }
 
     if (commandName === "balance") {
-      const {
-        data: { data },
-      } = await axios.get(
-        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result[wallet_address_result.length - 1]}`,
-        {
-          headers: {
-            "x-api-key": process.env.CHAINBASE_API_KEY,
-            accept: "application/json",
-          },
-        }
-      );
-      await interaction.reply(
-        `${parseInt(data, 16) / 1e18} ETH on ${getChainFromNetworkId(
-          network_id
-        )}`
-      );
+      const address = wallet_address_result[wallet_address_result.length - 1].wallet_address
+      if (address) {
+        const {
+          data: { data },
+        } = await axios.get(
+          `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result[wallet_address_result.length - 1].wallet_address}`,
+          {
+            headers: {
+              "x-api-key": process.env.CHAINBASE_API_KEY,
+              accept: "application/json",
+            },
+          }
+        );
+        await interaction.reply(
+          `${parseInt(data, 16) / 1e18} ETH on ${getChainFromNetworkId(
+            network_id
+          )}`
+        );
+      }
+      else {
+        await interaction.reply(`"Hey chief! Please register by running ```/register``` after the chat"`)
+      }
     }
   });
 });
