@@ -26,7 +26,6 @@ const discord_client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
-    å,
   ],
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
