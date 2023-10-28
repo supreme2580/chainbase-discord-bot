@@ -13,8 +13,8 @@ const mongodb_url = `mongodb+srv://${encodeURIComponent(
   process.env.MONGO_DB_PASSWORD
 )}@cluster0.eu7f6iy.mongodb.net/?retryWrites=true&w=majority`;
 
-const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
-const user_id = "919141293878280203";
+// const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
+// const user_id = "919141293878280203";
 const network_id = 8453;
 
 const PORT = process.env.PORT || 3000;
@@ -32,6 +32,7 @@ const discord_client = new Client({
 });
 
 const mongodb_client = new MongoClient(mongodb_url)
+const collection = mongodb_client.db("chainbase_bot_users").collection("users");
 
 const isEthereumAddress = (address) => {
   return (/^(0x)?[0-9a-fA-F]{40}$/).test(address)
@@ -71,34 +72,52 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post("/webhook", async (req, res) => {
-  const user = await discord_client.users.fetch(user_id);
+  // const user = await discord_client.users.fetch(user_id);
   const { body } = req;
   const from = body.data.from_address;
   const to = body.data.to_address;
   const value = (body.data.value / 1e18).toFixed(8);
 
-  if ((from || to) === user_wallet.toLowerCase()) {
-    try {
-      const message = `Hey chief, you just ${
-        from !== user_wallet.toLowerCase()
-          ? `received ${value} Eth on Base from ${from}`
-          : `sent ${value} Eth to ${to} on Base`
-      }`;
-      resend.emails.send({
-        from: "victoromorogbe69@gmail.com",
-        to: [email],
-        subject: "Registration for chainbase-bot successful!!!",
-        html: `<p>${message}</p>`
-      })
-      user.send(message);
-      return res.status(200).json();
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json();
-    }
-  } else {
-    console.log("Transaction irrelevant to this user");
+  const from_query = { wallet_address: from }
+  const to_query = { wallet_address: to }
+
+  const from_result = await collection.find(from_query).toArray()
+  const to_result = await collection.find(to_query).toArray()
+
+  for (const discord_id in from_result) {
+    const user = await discord_client.users.fetch(discord_id);
+    const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`
+    user.send(message)
   }
+
+  for (const discord_id in to_result) {
+    const user = await discord_client.users.fetch(discord_id);
+    const message = `Hey chief, you just received ${value} Eth to ${to} on Base`
+    user.send(message)
+  }
+
+//   if ((from || to) === user_wallet.toLowerCase()) {
+//     try {
+//       const message = `Hey chief, you just ${
+//         from !== user_wallet.toLowerCase()
+//           ? `received ${value} Eth on Base from ${from}`
+//           : `sent ${value} Eth to ${to} on Base`
+//       }`;
+//       resend.emails.send({
+//         from: "victoromorogbe69@gmail.com",
+//         to: [email],
+//         subject: "Registration for chainbase-bot successful!!!",
+//         html: `<p>${message}</p>`
+//       })
+//       user.send(message);
+//       return res.status(200).json();
+//     } catch (error) {
+//       console.log(error);
+//       return res.status(400).json();
+//     }
+//   } else {
+//     console.log("Transaction irrelevant to this user");
+//   }
 });
 
 app.get("/webhook", (req, res) => {
@@ -158,6 +177,8 @@ discord_client.once("ready", () => {
       console.log("Invalid command");
     }
     const { commandName } = interaction;
+    const wallet_address_query = { discord_id: interaction.user.id }
+    const wallet_address_result = await collection.find(wallet_address_query).toArray()
 
     if (commandName === "register") {
       const name = interaction.options.getString("name");
@@ -166,8 +187,6 @@ discord_client.once("ready", () => {
       const id = interaction.user.id;
 
       await mongodb_client.connect()
-
-      const collection = mongodb_client.db("chainbase_bot_users").collection("users");
 
       if (isEmailAddress(email) && isEthereumAddress(wallet_address)) {
         try {
@@ -204,7 +223,7 @@ discord_client.once("ready", () => {
       const {
         data: { data },
       } = await axios.get(
-        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${user_wallet}`,
+        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result[wallet_address_result.length-1]}`,
         {
           headers: {
             "x-api-key": process.env.CHAINBASE_API_KEY,
