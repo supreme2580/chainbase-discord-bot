@@ -4,8 +4,12 @@ const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
 const axios = require("axios");
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const mongodb_url = `mongodb+srv://${encodeURIComponent(process.env.MONGO_DB_USERNAME)}:${encodeURIComponent(process.env.MONGO_DB_PASSWORD)}@cluster0.rrtkbar.mongodb.net/?retryWrites=true&w=majority`;
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const mongodb_url = `mongodb+srv://${encodeURIComponent(
+  process.env.MONGO_DB_USERNAME
+)}:${encodeURIComponent(
+  process.env.MONGO_DB_PASSWORD
+)}@cluster0.rrtkbar.mongodb.net/?retryWrites=true&w=majority`;
 
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
 const user_id = "919141293878280203";
@@ -14,7 +18,11 @@ const network_id = 8453;
 const PORT = process.env.PORT || 3000;
 
 const discord_client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+  ],
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
 
@@ -23,7 +31,7 @@ const mongodb_client = new MongoClient(mongodb_url, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 const getChainFromNetworkId = (network) => {
@@ -61,7 +69,7 @@ async function run() {
     await mongodb_client.db("admin").command({ ping: 1 });
     console.log("You successfully connected to MongoDB!");
   } finally {
-    await mongodb_client.close()
+    await mongodb_client.close();
   }
 }
 
@@ -70,7 +78,7 @@ app.post("/webhook", async (req, res) => {
   const { body } = req;
   const from = body.data.from_address;
   const to = body.data.to_address;
-  const value = (body.data.value / 1e18).toFixed(8)
+  const value = (body.data.value / 1e18).toFixed(8);
 
   if ((from || to) === user_wallet.toLowerCase()) {
     try {
@@ -110,25 +118,25 @@ discord_client.once("ready", () => {
       description: "register a new user",
       options: [
         {
-          name: 'name',
-          description: 'Your name',
+          name: "name",
+          description: "Your name",
           type: 3,
           required: true,
         },
         {
-          name: 'email_address',
-          description: 'Your email address',
+          name: "email_address",
+          description: "Your email address",
           type: 3,
           required: true,
         },
         {
-          name: 'wallet_address',
-          description: 'Your wallet address',
+          name: "wallet_address",
+          description: "Your wallet address",
           type: 3,
           required: true,
         },
       ],
-    }
+    },
   ];
 
   discord_client.application.commands
@@ -138,9 +146,16 @@ discord_client.once("ready", () => {
     })
     .catch(console.error);
 
-    discord_client.on("interactionCreate", async (interaction) => {
-    
-    run().catch(console.dir)
+    discord_client.on('guildCreate', async (guild) => {
+      guild.members.cache.map(async member => await member.send("Hey chief! Please register by running ```/register``` after the chat"))
+    });
+
+    discord_client.on('guildMemberAdd', async (member) => {
+      await member.send("Hey chief! Please register by running ```/register``` after the chat")
+    });
+
+  discord_client.on("interactionCreate", async (interaction) => {
+    run().catch(console.dir);
 
     if (!interaction.isCommand()) {
       console.log("Invalid command");
@@ -148,11 +163,29 @@ discord_client.once("ready", () => {
     const { commandName } = interaction;
 
     if (commandName === "register") {
-      const name = interaction.options.getString("name")
-      const email = interaction.options.getString("email_address")
-      const wallet_address = interaction.options.getString("wallet_address")
-      const id = interaction.user.id
-      await interaction.reply(`Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}, your user id is ${id}`)
+      const name = interaction.options.getString("name");
+      const email = interaction.options.getString("email_address");
+      const wallet_address = interaction.options.getString("wallet_address");
+      const id = interaction.user.id;
+      MongoClient.connect(mongodb_url, function (err, db) {
+        if (err) throw err;
+        const database = db.db("admin");
+        database.collection("users").insertOne(
+          {
+            name: name,
+            email: email,
+            wallet_address: wallet_address
+          },
+          function (err, result) {
+            if (err) throw err;
+            res.json(result);
+            database.close();
+          }
+        );
+      });
+      await interaction.reply(
+        `Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}, your user id is ${id}`
+      );
     }
 
     if (commandName === "balance") {
@@ -167,7 +200,11 @@ discord_client.once("ready", () => {
           },
         }
       );
-      await interaction.reply(`${parseInt(data, 16) / 1e18} ETH on ${getChainFromNetworkId(network_id)}`);
+      await interaction.reply(
+        `${parseInt(data, 16) / 1e18} ETH on ${getChainFromNetworkId(
+          network_id
+        )}`
+      );
     }
   });
 });
