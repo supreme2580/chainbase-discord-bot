@@ -6,6 +6,8 @@ const axios = require("axios");
 
 const { Resend } = require("resend");
 
+const sdk = require('api')('@chainbase/v1.0#108opgclm7n3lbc');
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const mongodb_url = `mongodb+srv://${encodeURIComponent(
   process.env.MONGO_DB_USERNAME
@@ -88,7 +90,8 @@ app.post("/webhook", async (req, res) => {
   console.log("to-result: ", to_result);
 
   if (from_result.length > 0) {
-    for (const discord_id in from_result) {
+    for (const result of from_result) {
+      const discord_id = result.discord_id;
       const user = await discord_client.users.fetch(discord_id);
       const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`;
       console.log(`from: ${from}, to: ${to}, user: ${user}`);
@@ -98,7 +101,8 @@ app.post("/webhook", async (req, res) => {
   }
 
   if (to_result.length > 0) {
-    for (const discord_id in to_result) {
+    for (const result of to_result) {
+      const discord_id = result.discord_id;
       const user = await discord_client.users.fetch(discord_id);
       const message = `Hey chief, you just received ${value} Eth to ${to} on Base`;
       console.log(`from: ${from}, to: ${to}, user: ${user}`);
@@ -225,26 +229,27 @@ discord_client.once("ready", () => {
               subject: "Registration for chainbase-bot successful!!!",
               html: "<p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>",
             });
-            await interaction.reply("You have been successfully registered!!");
 
-            try {
-              const response = await axios.post(
-                "https://api.chainbase.online/v1/webhook",
+            const created = await sdk.createWebhook({
+              webhook_name: 'supreme_webhook',
+              webhook_url: 'https://chainbase-bot.onrender.com/webhook',
+              data_source: 'base_transactions',
+              filters: [
                 {
-                  address: wallet_address,
-                  chain_id: network_id, // the network id you want to track
-                  url: "https://chainbase-bot.onrender.com/webhook", // your webhook URL
+                  values: [wallet_address],
+                  field: 'From Address'
                 },
                 {
-                  headers: {
-                    "x-api-key": process.env.CHAINBASE_API_KEY, // your Chainbase API key
-                    "Content-Type": "application/json",
-                  },
+                  values: [wallet_address],
+                  field: 'To Address'
                 }
-              );
-              console.log(response.data);
-            } catch (error) {
-              console.error(error);
+              ]
+            }, {
+              'x-api-key': process.env.CHAINBASE_API_KEY
+            })
+
+            if (created.status == "activated") {
+              await interaction.reply("You have been successfully registered!!");
             }
 
           }
