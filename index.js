@@ -161,7 +161,7 @@ discord_client.once("ready", () => {
           wallet_address: wallet_address,
           discord_id: id,
         });
-        console.log(`${insertManyResult.insertedCount} documents successfully inserted.\n`);
+        console.log(`${insertManyResult.insertedId} documents successfully inserted.\n`);
       } catch (err) {
         console.error(`Something went wrong trying to insert the new documents: ${err}\n`);
       }
