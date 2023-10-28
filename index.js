@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
 const axios = require("axios");
 
+const { Resend } = require("resend");
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const mongodb_url = `mongodb+srv://${encodeURIComponent(
   process.env.MONGO_DB_USERNAME
@@ -16,6 +18,9 @@ const user_id = "919141293878280203";
 const network_id = 8453;
 
 const PORT = process.env.PORT || 3000;
+
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const discord_client = new Client({
   intents: [
@@ -79,6 +84,12 @@ app.post("/webhook", async (req, res) => {
           ? `received ${value} Eth on Base from ${from}`
           : `sent ${value} Eth to ${to} on Base`
       }`;
+      resend.emails.send({
+        from: "<no-reply>@chainbase.bot",
+        to: email,
+        subject: "Registration for chainbase-bot successful!!!",
+        html: <p>{message}</p>
+      })
       user.send(message);
       return res.status(200).json();
     } catch (error) {
@@ -167,6 +178,12 @@ discord_client.once("ready", () => {
             discord_id: id,
           });
           if (insertManyResult.insertedId) {
+            resend.emails.send({
+              from: "<no-reply>@chainbase.bot",
+              to: email,
+              subject: "Registration for chainbase-bot successful!!!",
+              html: <p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>
+            })
             await interaction.reply("You have been successfully registered!!")
           }
         } catch (err) {
