@@ -87,12 +87,14 @@ app.post("/webhook", async (req, res) => {
   for (const discord_id in from_result) {
     const user = await discord_client.users.fetch(discord_id);
     const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`
+    console.log(`from: ${from}, to: ${to}, user: ${user}`)
     user.send(message)
   }
 
   for (const discord_id in to_result) {
     const user = await discord_client.users.fetch(discord_id);
     const message = `Hey chief, you just received ${value} Eth to ${to} on Base`
+    console.log(`from: ${from}, to: ${to}, user: ${user}`)
     user.send(message)
   }
 
@@ -183,7 +185,7 @@ discord_client.once("ready", () => {
     if (commandName === "register") {
       const name = interaction.options.getString("name");
       const email = interaction.options.getString("email_address");
-      const wallet_address = interaction.options.getString("wallet_address");
+      const wallet_address = interaction.options.getString("wallet_address").toLowerCase();
       const id = interaction.user.id;
 
       await mongodb_client.connect()
