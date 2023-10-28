@@ -29,7 +29,7 @@ const discord_client = new Client({
 const mongodb_client = new MongoClient(mongodb_url)
 
 const isEthereumAddress = (address) => {
-  return (!/^(0x)?[0-9a-fA-F]{40}$/.test(address)) 
+  return (!/^(0x)?[0-9a-fA-F]{40}$/).test(address)
 }
 
 const isEmailAddress = (email) => {
