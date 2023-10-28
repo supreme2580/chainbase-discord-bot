@@ -63,16 +63,6 @@ const app = express();
 
 app.use(bodyParser.json());
 
-async function run() {
-  try {
-    await mongodb_client.connect();
-    await mongodb_client.db("admin").command({ ping: 1 });
-    console.log("You successfully connected to MongoDB!");
-  } finally {
-    await mongodb_client.close();
-  }
-}
-
 app.post("/webhook", async (req, res) => {
   const user = await discord_client.users.fetch(user_id);
   const { body } = req;
@@ -155,8 +145,6 @@ discord_client.once("ready", () => {
     });
 
   discord_client.on("interactionCreate", async (interaction) => {
-    run().catch(console.dir);
-
     if (!interaction.isCommand()) {
       console.log("Invalid command");
     }
@@ -170,7 +158,7 @@ discord_client.once("ready", () => {
       MongoClient.connect(mongodb_url, function (err, db) {
         if (err) throw err;
         const database = db.db("chainbase_bot_users");
-        database.collection("users").insertOne( 
+        database.collections("users").insertOne( 
           {
             name: name,
             email: email,
@@ -180,9 +168,8 @@ discord_client.once("ready", () => {
           function (err, result) {
             if (err) throw err;
             console.log(result);
-            database.close();
-          }
-        );
+            db.close();
+          });
       });
       await interaction.reply(
         `Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}, your user id is ${id}`
