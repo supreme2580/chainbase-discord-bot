@@ -13,8 +13,6 @@ const mongodb_url = `mongodb+srv://${encodeURIComponent(
   process.env.MONGO_DB_PASSWORD
 )}@cluster0.eu7f6iy.mongodb.net/?retryWrites=true&w=majority`;
 
-// const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
-// const user_id = "919141293878280203";
 const network_id = 8453;
 
 const PORT = process.env.PORT || 3000;
@@ -33,10 +31,6 @@ const collection = mongodb_client.db("chainbase_bot_users").collection("users");
 
 const isEthereumAddress = (address) => {
   return /^(0x)?[0-9a-fA-F]{40}$/.test(address);
-};
-
-const isEmailAddress = (email) => {
-  return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email);
 };
 
 const getChainFromNetworkId = (network) => {
@@ -181,7 +175,7 @@ discord_client.once("ready", () => {
 
       await mongodb_client.connect();
 
-      if (isEmailAddress(email) && isEthereumAddress(wallet_address)) {
+      if (isEthereumAddress(wallet_address)) {
         try {
           const insertManyResult = await collection.insertOne({
             name: name,
