@@ -230,15 +230,25 @@ discord_client.once("ready", () => {
               html: "<p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>",
             });
 
-            const created = await sdk.createWebhook({
-              webhook_name: 'supreme_webhook',
+            const created_sender = await sdk.createWebhook({
+              webhook_name: `${discord_id}_sender_webhook`,
               webhook_url: 'https://chainbase-bot.onrender.com/webhook',
               data_source: 'base_transactions',
               filters: [
                 {
                   values: [wallet_address],
                   field: 'From Address'
-                },
+                }
+              ]
+            }, {
+              'x-api-key': process.env.CHAINBASE_API_KEY
+            })
+
+            const created_receiver = await sdk.createWebhook({
+              webhook_name: `${discord_id}_receiver_webhook`,
+              webhook_url: 'https://chainbase-bot.onrender.com/webhook',
+              data_source: 'base_transactions',
+              filters: [
                 {
                   values: [wallet_address],
                   field: 'To Address'
@@ -248,7 +258,7 @@ discord_client.once("ready", () => {
               'x-api-key': process.env.CHAINBASE_API_KEY
             })
 
-            if (created.status == "activated") {
+            if (created_sender.status == "activated" && created_receiver.status == "activated") {
               await interaction.reply("You have been successfully registered!!");
             }
 
