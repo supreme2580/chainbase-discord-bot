@@ -28,6 +28,14 @@ const discord_client = new Client({
 
 const mongodb_client = new MongoClient(mongodb_url)
 
+const isEthereumAddress = (address) => {
+  return (!/^(0x)?[0-9a-fA-F]{40}$/.test(address)) 
+}
+
+const isEmailAddress = (email) => {
+  return (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i).test(email);
+}
+
 const getChainFromNetworkId = (network) => {
   switch (network) {
     case 1:
@@ -150,21 +158,29 @@ discord_client.once("ready", () => {
 
       const collection = mongodb_client.db("chainbase_bot_users").collection("users");
 
-      try {
-        const insertManyResult = await collection.insertOne({
-          name: name,
-          email: email,
-          wallet_address: wallet_address,
-          discord_id: id,
-        });
-        console.log(`${insertManyResult.insertedId} documents successfully inserted.\n`);
-      } catch (err) {
-        console.error(`Something went wrong trying to insert the new documents: ${err}\n`);
+      if (isEmailAddress(email) && isEthereumAddress(wallet_address)) {
+        try {
+          const insertManyResult = await collection.insertOne({
+            name: name,
+            email: email,
+            wallet_address: wallet_address,
+            discord_id: id,
+          });
+          if (insertManyResult.insertedId) {
+            await interaction.reply("You have been successfully registered!!")
+          }
+        } catch (err) {
+          console.error(`Something went wrong trying to insert the new documents: ${err}\n`);
+        }
       }
-  
-      await interaction.reply(
-        `Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}, your user id is ${id}`
-      );
+      else {
+        if (isEmailAddress(email) === false) {
+          await interaction.reply("Invalid email address")
+        }
+        else {
+          await interaction.reply("Invalid ethereum wallet address")
+        }
+      }
     }
 
     if (commandName === "balance") {
