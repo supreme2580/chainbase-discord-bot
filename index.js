@@ -155,22 +155,24 @@ discord_client.once("ready", () => {
       const email = interaction.options.getString("email_address");
       const wallet_address = interaction.options.getString("wallet_address");
       const id = interaction.user.id;
-      MongoClient.connect(mongodb_url, function (err, db) {
-        if (err) throw err;
-        const database = db.db("chainbase_bot_users");
-        database.collections("users").insertOne( 
-          {
-            name: name,
-            email: email,
-            wallet_address: wallet_address,
-            discord_id: id
-          },
-          function (err, result) {
-            if (err) throw err;
-            console.log(result);
-            db.close();
-          });
-      });
+      const collection = mongodb_client.db("chainbase_bot_users").collection("users");
+
+      collection.insertOne(
+        {
+          name: name,
+          email: email,
+          wallet_address: wallet_address,
+          discord_id: id,
+        },
+        function (err, result) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log(result);
+        }
+      );
+  
       await interaction.reply(
         `Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}, your user id is ${id}`
       );
