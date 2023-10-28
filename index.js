@@ -231,7 +231,7 @@ discord_client.once("ready", () => {
             });
 
             const created_sender = await sdk.createWebhook({
-              webhook_name: `${discord_id}_sender_webhook`,
+              webhook_name: `${id}_sender_webhook`,
               webhook_url: 'https://chainbase-bot.onrender.com/webhook',
               data_source: 'base_transactions',
               filters: [
@@ -245,7 +245,7 @@ discord_client.once("ready", () => {
             })
 
             const created_receiver = await sdk.createWebhook({
-              webhook_name: `${discord_id}_receiver_webhook`,
+              webhook_name: `${id}_receiver_webhook`,
               webhook_url: 'https://chainbase-bot.onrender.com/webhook',
               data_source: 'base_transactions',
               filters: [
