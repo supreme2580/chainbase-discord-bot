@@ -9,7 +9,7 @@ const mongodb_url = `mongodb+srv://${encodeURIComponent(
   process.env.MONGO_DB_USERNAME
 )}:${encodeURIComponent(
   process.env.MONGO_DB_PASSWORD
-)}@cluster0.rrtkbar.mongodb.net/?retryWrites=true&w=majority`;
+)}@cluster0.eu7f6iy.mongodb.net/?retryWrites=true&w=majority`;
 
 const user_wallet = "0xA3Db2Cb625bAe87D12AD769C47791a04BA1e5b29";
 const user_id = "919141293878280203";
@@ -26,13 +26,7 @@ const discord_client = new Client({
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
 
-const mongodb_client = new MongoClient(mongodb_url, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
+const mongodb_client = new MongoClient(mongodb_url)
 
 const getChainFromNetworkId = (network) => {
   switch (network) {
@@ -155,23 +149,22 @@ discord_client.once("ready", () => {
       const email = interaction.options.getString("email_address");
       const wallet_address = interaction.options.getString("wallet_address");
       const id = interaction.user.id;
+
+      await mongodb_client.connect()
+
       const collection = mongodb_client.db("chainbase_bot_users").collection("users");
 
-      collection.insertOne(
-        {
+      try {
+        const insertManyResult = await collection.insertOne({
           name: name,
           email: email,
           wallet_address: wallet_address,
           discord_id: id,
-        },
-        function (err, result) {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          console.log(result);
-        }
-      );
+        });
+        console.log(`${insertManyResult.insertedCount} documents successfully inserted.\n`);
+      } catch (err) {
+        console.error(`Something went wrong trying to insert the new documents: ${err}\n`);
+      }
   
       await interaction.reply(
         `Your response is name: ${name}, email: ${email}, your wallet address is ${wallet_address}, your user id is ${id}`
