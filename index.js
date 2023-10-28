@@ -4,8 +4,6 @@ const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
 const axios = require("axios");
 
-const { Resend } = require("resend");
-
 const sdk = require('api')('@chainbase/v1.0#108opgclm7n3lbc');
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
@@ -20,8 +18,6 @@ const mongodb_url = `mongodb+srv://${encodeURIComponent(
 const network_id = 8453;
 
 const PORT = process.env.PORT || 3000;
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const discord_client = new Client({
   intents: [
@@ -113,28 +109,6 @@ app.post("/webhook", async (req, res) => {
 
   return res.status(200).json();
 
-  //   if ((from || to) === user_wallet.toLowerCase()) {
-  //     try {
-  //       const message = `Hey chief, you just ${
-  //         from !== user_wallet.toLowerCase()
-  //           ? `received ${value} Eth on Base from ${from}`
-  //           : `sent ${value} Eth to ${to} on Base`
-  //       }`;
-  //       resend.emails.send({
-  //         from: "victoromorogbe69@gmail.com",
-  //         to: [email],
-  //         subject: "Registration for chainbase-bot successful!!!",
-  //         html: `<p>${message}</p>`
-  //       })
-  //       user.send(message);
-  //       return res.status(200).json();
-  //     } catch (error) {
-  //       console.log(error);
-  //       return res.status(400).json();
-  //     }
-  //   } else {
-  //     console.log("Transaction irrelevant to this user");
-  //   }
 });
 
 app.get("/webhook", (req, res) => {
@@ -223,12 +197,6 @@ discord_client.once("ready", () => {
             discord_id: id,
           });
           if (insertManyResult.insertedId) {
-            resend.emails.send({
-              from: "victoromorogbe69@gmail.com",
-              to: [email],
-              subject: "Registration for chainbase-bot successful!!!",
-              html: "<p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>",
-            });
 
             await sdk.createWebhook({
               webhook_name: `${id}_webhook`,
