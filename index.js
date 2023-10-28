@@ -89,6 +89,7 @@ app.post("/webhook", async (req, res) => {
     const message = `Hey chief, you just sent ${value} Eth to ${to} on Base`
     console.log(`from: ${from}, to: ${to}, user: ${user}`)
     user.send(message)
+    return res.status(200).json();
   }
 
   for (const discord_id in to_result) {
@@ -96,7 +97,10 @@ app.post("/webhook", async (req, res) => {
     const message = `Hey chief, you just received ${value} Eth to ${to} on Base`
     console.log(`from: ${from}, to: ${to}, user: ${user}`)
     user.send(message)
+    return res.status(200).json();
   }
+
+  return res.status(200).json();
 
 //   if ((from || to) === user_wallet.toLowerCase()) {
 //     try {
