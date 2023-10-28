@@ -231,27 +231,12 @@ discord_client.once("ready", () => {
             });
 
             await sdk.createWebhook({
-              webhook_name: `${id}_sender_webhook`,
+              webhook_name: `${id}_webhook`,
               webhook_url: 'https://chainbase-bot.onrender.com/webhook',
               data_source: 'base_transactions',
               filters: [
                 {
-                  values: [wallet_address],
-                  field: 'From Address'
-                }
-              ]
-            }, {
-              'x-api-key': process.env.CHAINBASE_API_KEY
-            })
-
-            await sdk.createWebhook({
-              webhook_name: `${id}_receiver_webhook`,
-              webhook_url: 'https://chainbase-bot.onrender.com/webhook',
-              data_source: 'base_transactions',
-              filters: [
-                {
-                  values: [wallet_address],
-                  field: 'To Address'
+                  values: [wallet_address]
                 }
               ]
             }, {
