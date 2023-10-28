@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const { Client, GatewayIntentBits } = require("discord.js");
 const axios = require("axios");
 
-const sdk = require('api')('@chainbase/v1.0#108opgclm7n3lbc');
+const sdk = require("api")("@chainbase/v1.0#108opgclm7n3lbc");
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const mongodb_url = `mongodb+srv://${encodeURIComponent(
@@ -102,7 +102,6 @@ app.post("/webhook", async (req, res) => {
   }
 
   return res.status(200).json();
-
 });
 
 app.get("/webhook", (req, res) => {
@@ -175,42 +174,51 @@ discord_client.once("ready", () => {
 
       await mongodb_client.connect();
 
-      if (isEthereumAddress(wallet_address)) {
-        try {
-          const insertManyResult = await collection.insertOne({
-            name: name,
-            wallet_address: wallet_address,
-            discord_id: id,
-          });
-          if (insertManyResult.insertedId) {
+      const query = { wallet_address: to };
+      const result = await collection.find(query).toArray();
 
-            await sdk.createWebhook({
-              webhook_name: `${id}_webhook`,
-              webhook_url: 'https://chainbase-bot.onrender.com/webhook',
-              data_source: 'base_transactions',
-              filters: [
-                {
-                  values: [wallet_address]
-                }
-              ]
-            }, {
-              'x-api-key': process.env.CHAINBASE_API_KEY
-            })
-
-
-            await interaction.reply("You have been successfully registered!!");
-
-          }
-        } catch (err) {
-          console.error(
-            `Something went wrong trying to insert the new documents: ${err}\n`
-          );
-        }
+      if (result.length > 0) {
+        await interaction.reply("You have been successfully registered!!");
       } else {
-        if (isEmailAddress(email) === false) {
-          await interaction.reply("Invalid email address");
+        if (isEthereumAddress(wallet_address)) {
+          try {
+            const insertManyResult = await collection.insertOne({
+              name: name,
+              wallet_address: wallet_address,
+              discord_id: id,
+            });
+            if (insertManyResult.insertedId) {
+              await sdk.createWebhook(
+                {
+                  webhook_name: `${id}_webhook`,
+                  webhook_url: "https://chainbase-bot.onrender.com/webhook",
+                  data_source: "base_transactions",
+                  filters: [
+                    {
+                      values: [wallet_address],
+                    },
+                  ],
+                },
+                {
+                  "x-api-key": process.env.CHAINBASE_API_KEY,
+                }
+              );
+
+              await interaction.reply(
+                "You have been successfully registered!!"
+              );
+            }
+          } catch (err) {
+            console.error(
+              `Something went wrong trying to insert the new documents: ${err}\n`
+            );
+          }
         } else {
-          await interaction.reply("Invalid ethereum wallet address");
+          if (isEmailAddress(email) === false) {
+            await interaction.reply("Invalid email address");
+          } else {
+            await interaction.reply("Invalid ethereum wallet address");
+          }
         }
       }
     }
