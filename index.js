@@ -6,7 +6,7 @@ const axios = require("axios");
 
 const sdk = require("api")("@chainbase/v1.0#108opgclm7n3lbc");
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const mongodb_url = `mongodb+srv://${encodeURIComponent(
   process.env.MONGO_DB_USERNAME
 )}:${encodeURIComponent(
