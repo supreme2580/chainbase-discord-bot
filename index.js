@@ -88,7 +88,7 @@ app.post("/webhook", async (req, res) => {
         from: "<no-reply>@chainbase.bot",
         to: email,
         subject: "Registration for chainbase-bot successful!!!",
-        html: <p>{message}</p>
+        html: `<p>${message}</p>`
       })
       user.send(message);
       return res.status(200).json();
@@ -182,7 +182,7 @@ discord_client.once("ready", () => {
               from: "<no-reply>@chainbase.bot",
               to: email,
               subject: "Registration for chainbase-bot successful!!!",
-              html: <p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>
+              html: "<p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>"
             })
             await interaction.reply("You have been successfully registered!!")
           }
