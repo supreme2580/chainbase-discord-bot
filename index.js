@@ -227,9 +227,7 @@ discord_client.once("ready", () => {
       const {
         data: { data },
       } = await axios.get(
-        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result.at(
-          wallet_address_result.length - 1
-        )}`,
+        `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result[wallet_address_result.length - 1]}`,
         {
           headers: {
             "x-api-key": process.env.CHAINBASE_API_KEY,
