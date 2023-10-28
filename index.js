@@ -137,12 +137,6 @@ discord_client.once("ready", () => {
           required: true,
         },
         {
-          name: "email_address",
-          description: "Your email address",
-          type: 3,
-          required: true,
-        },
-        {
           name: "wallet_address",
           description: "Your wallet address",
           type: 3,
@@ -180,7 +174,6 @@ discord_client.once("ready", () => {
 
     if (commandName === "register") {
       const name = interaction.options.getString("name");
-      const email = interaction.options.getString("email_address");
       const wallet_address = interaction.options
         .getString("wallet_address")
         .toLowerCase();
@@ -192,7 +185,6 @@ discord_client.once("ready", () => {
         try {
           const insertManyResult = await collection.insertOne({
             name: name,
-            email: email,
             wallet_address: wallet_address,
             discord_id: id,
           });
