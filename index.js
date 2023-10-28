@@ -169,8 +169,8 @@ discord_client.once("ready", () => {
       const id = interaction.user.id;
       MongoClient.connect(mongodb_url, function (err, db) {
         if (err) throw err;
-        const database = db.db("admin");
-        database.collection("users").insertOne(
+        const database = db.db("chainbase_bot_users");
+        database.collection("users").insertOne( 
           {
             name: name,
             email: email,
