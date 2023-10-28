@@ -85,8 +85,8 @@ app.post("/webhook", async (req, res) => {
           : `sent ${value} Eth to ${to} on Base`
       }`;
       resend.emails.send({
-        from: "<no-reply>@chainbase.bot",
-        to: email,
+        from: "victoromorogbe69@gmail.com",
+        to: [email],
         subject: "Registration for chainbase-bot successful!!!",
         html: `<p>${message}</p>`
       })
@@ -179,8 +179,8 @@ discord_client.once("ready", () => {
           });
           if (insertManyResult.insertedId) {
             resend.emails.send({
-              from: "<no-reply>@chainbase.bot",
-              to: email,
+              from: "victoromorogbe69@gmail.com",
+              to: [email],
               subject: "Registration for chainbase-bot successful!!!",
               html: "<p>Hey Chief, you have successfully registered for chainbase-bot, enjoy🎉🎉🎉</p>"
             })
