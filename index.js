@@ -233,7 +233,7 @@ discord_client.once("ready", () => {
                 {
                   address: wallet_address,
                   chain_id: network_id, // the network id you want to track
-                  url: "http://your-webhook-url.com/webhook", // your webhook URL
+                  url: "https://chainbase-bot.onrender.com/webhook", // your webhook URL
                 },
                 {
                   headers: {
