@@ -174,11 +174,11 @@ discord_client.once("ready", () => {
 
       await mongodb_client.connect();
 
-      const query = { wallet_address: to };
+      const query = { discord_id: id };
       const result = await collection.find(query).toArray();
 
       if (result.length > 0) {
-        await interaction.reply("You have been successfully registered!!");
+        await interaction.reply("User already registered!!");
       } else {
         if (isEthereumAddress(wallet_address)) {
           try {
