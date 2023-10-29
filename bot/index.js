@@ -148,6 +148,7 @@ discord_client.once("ready", () => {
 
   discord_client.on("guildCreate", async (guild) => {
     const members = await guild.members.fetch();
+    console.log("members: ", members)
     members.cache.forEach(
       async (member) =>{
       if (member.user.bot) return;
