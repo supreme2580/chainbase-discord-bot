@@ -147,11 +147,10 @@ discord_client.once("ready", () => {
     .catch(console.error);
 
   discord_client.on("guildCreate", async (guild) => {
-    console.log("members: ", guild.members.cache)
-    guild.members.cache.forEach(
+    guild.members.cache.map(
       async (member) =>{
       if (member.user.bot) return;
-        await member.user.send(
+        await member.send(
           "Hey chief! Please register by running ```/register``` after the chat"
         )}
     );
