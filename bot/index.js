@@ -146,13 +146,20 @@ discord_client.once("ready", () => {
     })
     .catch(console.error);
 
-  discord_client.on("guildCreate" || "guildMemberAdd", async (guild) => {
-    guild.members.cache.map(
-      async (member) =>
+  discord_client.on("guildCreate", async (guild) => {
+    guild.members.cache.forEach(
+      async (member) =>{
+      if (member.user.bot) return;
         await member.send(
           "Hey chief! Please register by running ```/register``` after the chat"
-        )
+        )}
     );
+  });
+
+  discord_client.on("guildCreaguildMemberAddte", async (member) => {
+    await member.send(
+      "Hey chief! Please register by running ```/register``` after the chat"
+    )
   });
 
   discord_client.on("interactionCreate", async (interaction) => {
