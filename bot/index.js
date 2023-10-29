@@ -150,7 +150,7 @@ discord_client.once("ready", () => {
     guild.members.cache.forEach(async (member) => {
       if (member.user.bot) return;
       try {
-        await member.user.send(
+        await member.send(
           "Hey chief! Please register by running ```/register``` after the chat"
         );
       } catch (error) {
