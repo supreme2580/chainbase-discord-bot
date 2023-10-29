@@ -147,19 +147,26 @@ discord_client.once("ready", () => {
     .catch(console.error);
 
   discord_client.on("guildCreate", async (guild) => {
-    guild.members.cache.map(
-      async (member) =>{
+    guild.members.cache.forEach(async (member) => {
       if (member.user.bot) return;
-        await member.send(
+      try {
+        await member.user.send(
           "Hey chief! Please register by running ```/register``` after the chat"
-        )}
-    );
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    });
   });
 
   discord_client.on("guildMemberAdd", async (member) => {
-    await member.send(
-      "Hey chief! Please register by running ```/register``` after the chat"
-    )
+    try {
+      await member.send(
+        "Hey chief! Please register by running ```/register``` after the chat"
+      );
+    } catch (error) {
+      console.log(error)
+    }
   });
 
   discord_client.on("interactionCreate", async (interaction) => {
@@ -231,12 +238,16 @@ discord_client.once("ready", () => {
     }
 
     if (commandName === "balance") {
-      const address = wallet_address_result[wallet_address_result.length - 1].wallet_address
+      const address =
+        wallet_address_result[wallet_address_result.length - 1].wallet_address;
       if (address) {
         const {
           data: { data },
         } = await axios.get(
-          `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${wallet_address_result[wallet_address_result.length - 1].wallet_address}`,
+          `https://api.chainbase.online/v1/account/balance?chain_id=${network_id}&address=${
+            wallet_address_result[wallet_address_result.length - 1]
+              .wallet_address
+          }`,
           {
             headers: {
               "x-api-key": process.env.CHAINBASE_API_KEY,
@@ -249,9 +260,11 @@ discord_client.once("ready", () => {
             network_id
           )}`
         );
-      }
-      else {
-        await interaction.reply(`"Hey chief! Please register by running ```/register``` after the chat"`)
+      } else {
+        await interaction.reply(
+          `"Hey chief! Please register by running ``` /
+            register``` after the chat"`
+        );
       }
     }
   });
