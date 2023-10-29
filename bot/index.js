@@ -156,7 +156,7 @@ discord_client.once("ready", () => {
     );
   });
 
-  discord_client.on("guildCreaguildMemberAddte", async (member) => {
+  discord_client.on("guildMemberAdd", async (member) => {
     await member.send(
       "Hey chief! Please register by running ```/register``` after the chat"
     )
