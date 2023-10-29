@@ -117,7 +117,7 @@ export function Hero() {
             </p>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-4">
               <Button
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                href={"https://bafybeiad76jhmaq65cik5efgu76mra5jdqviav5c6u7mprh3pjkac3sftq.ipfs.w3s.link/Screen-2023-10-29-201618.mp4"}
                 variant="outline"
               >
                 <PlayIcon className="h-6 w-6 flex-none" />
