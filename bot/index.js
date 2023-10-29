@@ -147,7 +147,8 @@ discord_client.once("ready", () => {
     .catch(console.error);
 
   discord_client.on("guildCreate", async (guild) => {
-    guild.members.cache.forEach(async (member) => {
+    const members = await guild.members.fetch();
+    members.forEach(async (member) => {
       if (member.user.bot) return;
       try {
         await member.send(
