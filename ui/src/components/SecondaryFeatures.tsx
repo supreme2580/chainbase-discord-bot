@@ -4,40 +4,22 @@ import { Container } from '@/components/Container'
 
 const features = [
   {
-    name: 'Invest any amount',
+    name: 'Price Alerts',
     description:
-      'Whether it’s $1 or $1,000,000, we can put your money to work for you.',
+      'Set up customizable alerts when coin/token prices hit specified thresholds. Receive alerts via discord, email or SMS.',
     icon: DeviceArrowIcon,
   },
   {
-    name: 'Build a balanced portfolio',
+    name: 'Transaction Tracking',
     description:
-      'Invest in different industries to find the most opportunities to win huge.',
+      'Automatically track inbound and outbound transactions from connected wallets. Provide transaction summaries with details on amount, date, etc.',
     icon: DeviceCardsIcon,
   },
   {
-    name: 'Trade in real-time',
+    name: 'Portfolio Performance',
     description:
-      'Get insider tips on big stock moves and act on them within seconds.',
+      'Analyze portfolio growth over time. Calculate and display portfolio returns for custom time periods.',
     icon: DeviceClockIcon,
-  },
-  {
-    name: 'Profit from your network',
-    description:
-      'Invite new insiders to get tips faster and beat even other Pocket users.',
-    icon: DeviceListIcon,
-  },
-  {
-    name: 'Encrypted and anonymized',
-    description:
-      'Cutting-edge security technology that even the NSA doesn’t know about keeps you hidden.',
-    icon: DeviceLockIcon,
-  },
-  {
-    name: 'Portfolio tracking',
-    description:
-      'Watch your investments grow exponentially, leaving other investors in the dust.',
-    icon: DeviceChartIcon,
   },
 ]
 
@@ -196,11 +178,10 @@ export function SecondaryFeatures() {
       <Container>
         <div className="mx-auto max-w-2xl sm:text-center">
           <h2 className="text-3xl font-medium tracking-tight text-gray-900">
-            Now is the time to build your portfolio.
+            Easily monitor your digital assets on discord.
           </h2>
           <p className="mt-2 text-lg text-gray-600">
-            With typical market returns, you have to start young to secure your
-            future. With Pocket, it’s never too late to build your nest egg.
+            Track and monitor your digital assets directly on discord. Connect your wallers and monitor performance over time and receive alers when prices hit key thresholds.
           </p>
         </div>
         <ul
